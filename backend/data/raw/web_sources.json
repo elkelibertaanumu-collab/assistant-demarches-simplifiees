@@ -1,0 +1,74 @@
+[
+  {
+    "id": "tg-service-public-home",
+    "title": "Portail services publics - Togo",
+    "url": "https://service-public.gouv.tg/",
+    "category": "general",
+    "type": "html",
+    "updated_at": "2026-03-04"
+  },
+  {
+    "id": "tg-category-papiers-citoyennete",
+    "title": "Categorie Papiers & Citoyennete",
+    "url": "https://service-public.gouv.tg/category/papiers-citoyennete/62197bd333c0179346497418",
+    "category": "papiers_citoyennete",
+    "type": "html",
+    "updated_at": "2026-03-04"
+  },
+  {
+    "id": "tg-category-justice",
+    "title": "Categorie Justice",
+    "url": "https://service-public.gouv.tg/category/justice/62197bd333c017934649743e",
+    "category": "justice",
+    "type": "html",
+    "updated_at": "2026-03-04"
+  },
+  {
+    "id": "tg-category-emploi-securite-sociale",
+    "title": "Categorie Emploi & Securite Sociale",
+    "url": "https://service-public.gouv.tg/category/emploi-securite-sociale/62197bd333c0179346497413",
+    "category": "emploi_securite_sociale",
+    "type": "html",
+    "updated_at": "2026-03-04"
+  },
+  {
+    "id": "tg-category-fiscalite-foncier-douanes",
+    "title": "Categorie Fiscalite, Foncier & Douanes",
+    "url": "https://service-public.gouv.tg/category/fiscalite-foncier-douanes/62197bd333c017934649741b",
+    "category": "fiscalite_foncier_douanes",
+    "type": "html",
+    "updated_at": "2026-03-04"
+  },
+  {
+    "id": "tg-faq",
+    "title": "FAQ Services Publics",
+    "url": "https://service-public.gouv.tg/faq",
+    "category": "faq",
+    "type": "html",
+    "updated_at": "2026-03-04"
+  },
+  {
+    "id": "tg-phone-book",
+    "title": "Annuaire Administration",
+    "url": "https://service-public.gouv.tg/phone-book",
+    "category": "annuaire",
+    "type": "html",
+    "updated_at": "2026-03-04"
+  },
+  {
+    "id": "tg-portal-republique",
+    "title": "Portail officiel de la Republique Togolaise",
+    "url": "https://togo.gouv.tg/",
+    "category": "portail_etat",
+    "type": "html",
+    "updated_at": "2026-03-04"
+  },
+  {
+    "id": "tg-dgdn",
+    "title": "Direction Generale de la Documentation Nationale",
+    "url": "https://dgdn.gouv.tg/",
+    "category": "identite",
+    "type": "html",
+    "updated_at": "2026-03-04"
+  }
+]
