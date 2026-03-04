@@ -91,6 +91,8 @@ class RagService:
             return "emploi_securite_sociale"
         if any(k in q for k in ["fiscal", "impot", "douane", "taxe", "foncier"]):
             return "fiscalite_foncier_douanes"
+        if any(k in q for k in ["entreprise", "societe", "immatriculation", "commerce", "micro-entreprise", "micro entreprise"]):
+            return "fiscalite_foncier_douanes"
         return None
 
     def _generate_grounded_answer(
@@ -281,6 +283,21 @@ class RagService:
                 "Photo d'identite recente",
                 "Justificatif de domicile",
                 "Formulaire officiel rempli"
+            ]
+        if "casier" in q:
+            return [
+                "Piece d'identite valide",
+                "Extrait d'acte de naissance",
+                "Formulaire de demande rempli",
+                "Recu de paiement des frais"
+            ]
+        if any(k in q for k in ["entreprise", "micro-entreprise", "micro entreprise", "societe"]):
+            return [
+                "Piece d'identite du promoteur",
+                "Nom commercial / raison sociale",
+                "Description de l'activite",
+                "Adresse d'exploitation",
+                "Formulaire d'immatriculation"
             ]
         return docs
 

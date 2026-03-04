@@ -1,6 +1,8 @@
 from collections import deque
+import re
+import time
 
-from fastapi import APIRouter, Header, HTTPException
+from fastapi import APIRouter, Header, HTTPException, Request
 
 from app.models.schemas import (
     AskRequest,
@@ -33,6 +35,9 @@ auth_service = AuthService()
 loaded_history = load_history()
 history_store: deque[HistoryItem] = deque(loaded_history, maxlen=20)
 history_counter = max((item.id for item in loaded_history), default=0)
+auth_rate_state: dict[str, list[float]] = {}
+AUTH_WINDOW_SECONDS = 10 * 60
+AUTH_MAX_ATTEMPTS = 8
 
 
 def extract_bearer_token(authorization: str | None) -> str:
@@ -44,13 +49,42 @@ def extract_bearer_token(authorization: str | None) -> str:
     return value[7:].strip()
 
 
+def password_is_strong(password: str) -> bool:
+    if len(password) < 8:
+        return False
+    if not re.search(r"[A-Z]", password):
+        return False
+    if not re.search(r"[a-z]", password):
+        return False
+    if not re.search(r"[0-9]", password):
+        return False
+    return True
+
+
+def check_auth_rate_limit(key: str) -> None:
+    now = time.time()
+    attempts = auth_rate_state.get(key, [])
+    attempts = [t for t in attempts if now - t <= AUTH_WINDOW_SECONDS]
+    if len(attempts) >= AUTH_MAX_ATTEMPTS:
+        raise HTTPException(status_code=429, detail="Trop de tentatives. Reessaie plus tard.")
+    attempts.append(now)
+    auth_rate_state[key] = attempts
+
+
 @router.get("/health")
 def health() -> dict[str, bool]:
     return {"ok": True}
 
 
 @router.post("/auth/register", response_model=AuthResponse)
-def auth_register(payload: AuthRegisterRequest) -> AuthResponse:
+def auth_register(payload: AuthRegisterRequest, request: Request) -> AuthResponse:
+    requester = request.client.host if request.client else "unknown"
+    check_auth_rate_limit(f"register:{requester}:{payload.email.strip().lower()}")
+    if not password_is_strong(payload.password):
+        raise HTTPException(
+            status_code=400,
+            detail="Mot de passe faible: min 8 caracteres avec majuscule, minuscule et chiffre."
+        )
     try:
         user = auth_service.register(
             name=payload.name,
@@ -66,7 +100,9 @@ def auth_register(payload: AuthRegisterRequest) -> AuthResponse:
 
 
 @router.post("/auth/login", response_model=AuthResponse)
-def auth_login(payload: AuthLoginRequest) -> AuthResponse:
+def auth_login(payload: AuthLoginRequest, request: Request) -> AuthResponse:
+    requester = request.client.host if request.client else "unknown"
+    check_auth_rate_limit(f"login:{requester}:{payload.email.strip().lower()}")
     try:
         token, user = auth_service.login(payload.email, payload.password)
         return AuthResponse(token=token, user=AuthUser(**user))

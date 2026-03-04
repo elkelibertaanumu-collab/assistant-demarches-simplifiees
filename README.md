@@ -55,6 +55,8 @@ assistant-demarches-simplifiees/
    - `POST /api/form/generate`
    - Historique persistant sur disque (`backend/data/processed/history.json`)
    - Utilisateurs/sessions auth persistants (`backend/data/processed/auth_users.json`, `auth_sessions.json`)
+   - Controle mot de passe (8+ caracteres, majuscule, minuscule, chiffre)
+   - Rate limit auth (anti brute-force)
 2. Frontend React (Vite) avec formulaire de question et affichage de reponse.
    - Page d'authentification (nom, email, mot de passe) avant acces
    - Navigation par onglets (`Assistant`, `Checklist`, `Formulaire`, `Historique`)
@@ -219,6 +221,12 @@ Test automatique (smoke test):
 ```bash
 cd backend
 python -m scripts.smoke_test https://<ton-app>.up.railway.app
+```
+
+Controle qualite RAG (10 questions):
+```bash
+cd backend
+python -m scripts.qa_rag_questions
 ```
 
 ### 6. Points de fiabilite deja inclus

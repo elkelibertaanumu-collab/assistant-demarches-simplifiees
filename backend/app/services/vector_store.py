@@ -52,6 +52,9 @@ class VectorStore:
             self.client.delete_collection(COLLECTION_NAME)
         except Exception:
             pass
+        self._ensure_collection()
+
+    def _ensure_collection(self) -> None:
         self.collection = self.client.get_or_create_collection(
             name=COLLECTION_NAME,
             embedding_function=self.embedding_fn
@@ -84,7 +87,12 @@ class VectorStore:
         if category_filter:
             query_args["where"] = {"category": category_filter}
 
-        result = self.collection.query(**query_args)
+        try:
+            result = self.collection.query(**query_args)
+        except Exception:
+            # Collection can be missing after reset/redeploy; recreate and return empty.
+            self._ensure_collection()
+            return []
         docs = result.get("documents", [[]])[0]
         metas = result.get("metadatas", [[]])[0]
         distances = result.get("distances", [[]])[0]

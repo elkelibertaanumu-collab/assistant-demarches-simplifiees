@@ -57,6 +57,9 @@ export default function AuthPage({ onLogin }) {
           <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="toi@email.com" />
           <label>Mot de passe</label>
           <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="********" />
+          {mode === "register" && (
+            <p className="hint">Mot de passe: 8+ caracteres, avec majuscule, minuscule et chiffre.</p>
+          )}
           {error && <p className="error">{error}</p>}
           <button type="submit" disabled={loading}>
             {loading ? "Chargement..." : mode === "login" ? "Se connecter" : "S'inscrire"}
