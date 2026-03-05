@@ -69,7 +69,7 @@ assistant-demarches-simplifiees/
    - Etat vide avant premiere recherche
    - Layout responsive mobile/desktop
    - Structure en composants (`AskForm`, `AnswerPanel`, `HistoryPanel`)
-   - Score de confiance + horodatage de generation
+   - Horodatage de generation
 3. Service RAG connecte a Chroma (`rag_service.py`) avec recherche de chunks pertinents.
    - Generation des champs (etapes, pieces, erreurs, checklist) depuis les passages recuperes
    - Citations multi-sources (jusqu'a 5 URLs uniques)
@@ -121,7 +121,7 @@ Copier `.env.example` vers `.env` et ajuster:
 - `APP_ENV`
 - `PORT`
 - `DATABASE_URL` (optionnel, active Postgres pour auth + historique)
-- `OPENAI_API_KEY` (etape future)
+- `OPENAI_API_KEY` (recommande pour de meilleures reponses)
 - `OPENAI_MODEL` (defaut: `gpt-4o-mini`)
 - `TARGET_COUNTRY=Togo`
 
@@ -141,7 +141,7 @@ cd backend
 python -m scripts.build_index
 ```
 5. Lancer l'API puis tester `POST /api/ask`.
-6. Etape suivante: ajouter generation LLM stricte a partir des chunks recuperes.
+6. Reponses plus fiables: garder des URLs tres ciblees et reindexer apres modification.
 
 ## Format JSONL des sources
 Chaque ligne doit etre un JSON valide:
@@ -183,18 +183,21 @@ Objectif: deployer frontend + backend ensemble via le `Dockerfile` du projet.
 
 ### 2. Ajouter PostgreSQL Railway
 1. Dans le meme projet Railway, `New` -> `Database` -> `PostgreSQL`.
-2. Ouvrir la DB puis copier la variable `DATABASE_URL`.
-3. Dans le service Web, ajouter `DATABASE_URL` dans les variables d'environnement.
+2. Dans le service Web, ouvrir `Variables` -> `Add Reference`.
+3. Selectionner la base PostgreSQL puis choisir `DATABASE_URL`.
 
 ### 3. Variables d'environnement du service Web
 Configurer au minimum:
 - `APP_NAME=Assistant Demarches Simplifiees`
 - `APP_ENV=prod`
-- `PORT=8000`
 - `TARGET_COUNTRY=Togo`
-- `DATABASE_URL=<url postgres railway>`
-- `OPENAI_API_KEY=<ta cle>` (optionnel mais recommande pour reponses LLM)
+- `DATABASE_URL=<reference railway postgres>`
+- `OPENAI_API_KEY=<ta cle>` (recommande)
 - `OPENAI_MODEL=gpt-4o-mini`
+
+Notes:
+- Railway fournit `PORT` automatiquement (ne pas forcer).
+- La cle OpenAI ameliore la qualite mais ne suffit pas seule: la qualite depend aussi des sources RAG indexees.
 
 ### 4. Source ingest / index en production
 Important: Railway n'execute pas automatiquement l'ingestion/indexation.
