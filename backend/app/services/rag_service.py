@@ -112,7 +112,7 @@ class RagService:
         q = self._normalize_text(question)
         if ("carte" in q and "identit" in q) or any(k in q for k in ["carte d'identite", "carte d identite", "passeport", "acte de naissance", "nationalite"]):
             return "papiers_citoyennete"
-        if any(k in q for k in ["casier", "tribunal", "justice", "plainte", "jugement"]):
+        if any(k in q for k in ["casier", "tribunal", "justice", "plainte", "jugement", "condamnation", "non condamnation"]):
             return "justice"
         if any(k in q for k in ["emploi", "travail", "securite sociale", "cnss", "recrutement"]):
             return "emploi_securite_sociale"
@@ -126,7 +126,7 @@ class RagService:
         q = self._normalize_text(question)
         if ("carte" in q and "identit" in q) or any(k in q for k in ["cni", "carte d identite", "carte nationale d identite", "piece d identite"]):
             return "cni"
-        if "casier" in q:
+        if "casier" in q or "non condamnation" in q or "condamnation" in q:
             return "casier"
         if any(k in q for k in ["entreprise", "micro entreprise", "immatriculation", "societe"]):
             return "entreprise"

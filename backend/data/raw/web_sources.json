@@ -1,74 +1,130 @@
 [
   {
-    "id": "tg-service-public-home",
-    "title": "Portail services publics - Togo",
-    "url": "https://service-public.gouv.tg/",
-    "category": "general",
-    "type": "html",
-    "updated_at": "2026-03-04"
-  },
-  {
-    "id": "tg-category-papiers-citoyennete",
-    "title": "Categorie Papiers & Citoyennete",
-    "url": "https://service-public.gouv.tg/category/papiers-citoyennete/62197bd333c0179346497418",
+    "id": "tg-dgdn-cni",
+    "title": "DGDN - Carte nationale d'identite",
+    "url": "https://dgdn.gouv.tg/fr/titre-et-documents/carte-nationale-d-identite",
     "category": "papiers_citoyennete",
     "type": "html",
-    "updated_at": "2026-03-04"
+    "updated_at": "2026-03-05"
   },
   {
-    "id": "tg-category-justice",
-    "title": "Categorie Justice",
-    "url": "https://service-public.gouv.tg/category/justice/62197bd333c017934649743e",
+    "id": "tg-dgdn-passeport",
+    "title": "DGDN - Passeport",
+    "url": "https://dgdn.gouv.tg/fr/titre-et-documents/passeport",
+    "category": "papiers_citoyennete",
+    "type": "html",
+    "updated_at": "2026-03-05"
+  },
+  {
+    "id": "tg-dgdn-carte-sejour",
+    "title": "DGDN - Carte de sejour",
+    "url": "https://dgdn.gouv.tg/fr/titre-et-documents/carte-de-sejour",
+    "category": "papiers_citoyennete",
+    "type": "html",
+    "updated_at": "2026-03-05"
+  },
+  {
+    "id": "tg-dgdn-visa",
+    "title": "DGDN - Visa",
+    "url": "https://dgdn.gouv.tg/fr/titre-et-documents/visa",
+    "category": "papiers_citoyennete",
+    "type": "html",
+    "updated_at": "2026-03-05"
+  },
+  {
+    "id": "tg-sp-passeport",
+    "title": "Service Public - Demande de passeport",
+    "url": "https://service-public.gouv.tg/service/62a3c668c07b617d9d1be12b/papiers-citoyennete/demande-de-passeport",
+    "category": "papiers_citoyennete",
+    "type": "html",
+    "updated_at": "2026-03-05"
+  },
+  {
+    "id": "tg-sp-casier",
+    "title": "Service Public - Attestation de condamnation ou non condamnation",
+    "url": "https://service-public.gouv.tg/service/62197bd433c0179346497bd1/papiers-citoyennete/demande-dattestation-de-condamnation-ou-de-non-condamnation-2",
     "category": "justice",
     "type": "html",
-    "updated_at": "2026-03-04"
+    "updated_at": "2026-03-05"
   },
   {
-    "id": "tg-category-emploi-securite-sociale",
-    "title": "Categorie Emploi & Securite Sociale",
-    "url": "https://service-public.gouv.tg/category/emploi-securite-sociale/62197bd333c0179346497413",
-    "category": "emploi_securite_sociale",
+    "id": "tg-sp-nationalite",
+    "title": "Service Public - Certificat de nationalite togolaise",
+    "url": "https://service-public.gouv.tg/service/6755f1c18e2f9f4fa907aa17/papiers-citoyennete/demande-du-certificat-de-nationalite-togolaise",
+    "category": "papiers_citoyennete",
     "type": "html",
-    "updated_at": "2026-03-04"
+    "updated_at": "2026-03-05"
   },
   {
-    "id": "tg-category-fiscalite-foncier-douanes",
-    "title": "Categorie Fiscalite, Foncier & Douanes",
-    "url": "https://service-public.gouv.tg/category/fiscalite-foncier-douanes/62197bd333c017934649741b",
+    "id": "tg-sp-duplicata-nationalite",
+    "title": "Service Public - Duplicata certificat de nationalite",
+    "url": "https://service-public.gouv.tg/service/63c8495032efd6f2a20662f2/papiers-citoyennete/obtenir-un-duplicata-d-un-certificat-de-nationalite",
+    "category": "papiers_citoyennete",
+    "type": "html",
+    "updated_at": "2026-03-05"
+  },
+  {
+    "id": "tg-sp-copie-etat-civil",
+    "title": "Service Public - Copie d'acte d'etat civil",
+    "url": "https://service-public.gouv.tg/service/69401a22962a6d268eb716ef/papiers-citoyennete/demande-d-une-copie-d-acte-d-etat-civil",
+    "category": "papiers_citoyennete",
+    "type": "html",
+    "updated_at": "2026-03-05"
+  },
+  {
+    "id": "tg-sp-carte-sejour",
+    "title": "Service Public - Demande de carte de sejour",
+    "url": "https://service-public.gouv.tg/service/62a3b6e4c07b617d9d1b9bd9/papiers-citoyennete/demande-de-carte-de-sejour",
+    "category": "papiers_citoyennete",
+    "type": "html",
+    "updated_at": "2026-03-05"
+  },
+  {
+    "id": "tg-sp-visa-entree",
+    "title": "Service Public - Autorisation d'entree au Togo",
+    "url": "https://service-public.gouv.tg/service/676b18265e5ff67b7575fa9b/papiers-citoyennete/31uzhjbp3f29",
+    "category": "papiers_citoyennete",
+    "type": "html",
+    "updated_at": "2026-03-05"
+  },
+  {
+    "id": "tg-sp-creation-entreprise-individuelle",
+    "title": "Service Public - Creation d'entreprise individuelle (CFE)",
+    "url": "https://service-public.gouv.tg/service/62197bd433c0179346497d6b/fiscalite-foncier-douanes/creation-d-entreprise-individuelle-au-centre-de-formalite-des-e",
     "category": "fiscalite_foncier_douanes",
     "type": "html",
-    "updated_at": "2026-03-04"
+    "updated_at": "2026-03-05"
   },
   {
-    "id": "tg-faq",
-    "title": "FAQ Services Publics",
-    "url": "https://service-public.gouv.tg/faq",
-    "category": "faq",
+    "id": "tg-sp-creation-societe",
+    "title": "Service Public - Creation de societe (CFE)",
+    "url": "https://service-public.gouv.tg/service/62197bd433c0179346497d6f/fiscalite-foncier-douanes/creation-de-societe-au-centre-de-formalite-des-entreprises",
+    "category": "fiscalite_foncier_douanes",
     "type": "html",
-    "updated_at": "2026-03-04"
+    "updated_at": "2026-03-05"
   },
   {
-    "id": "tg-phone-book",
-    "title": "Annuaire Administration",
-    "url": "https://service-public.gouv.tg/phone-book",
-    "category": "annuaire",
+    "id": "tg-sp-modification-entreprise",
+    "title": "Service Public - Declaration modificative entreprise/societe",
+    "url": "https://service-public.gouv.tg/service/62197bd433c0179346497d71/fiscalite-foncier-douanes/declaration-modificative-des-entreprises-et-societes-au-ce",
+    "category": "fiscalite_foncier_douanes",
     "type": "html",
-    "updated_at": "2026-03-04"
+    "updated_at": "2026-03-05"
   },
   {
-    "id": "tg-portal-republique",
-    "title": "Portail officiel de la Republique Togolaise",
-    "url": "https://togo.gouv.tg/",
-    "category": "portail_etat",
+    "id": "tg-sp-cessation-entreprise",
+    "title": "Service Public - Cessation d'activite entreprise (CFE)",
+    "url": "https://service-public.gouv.tg/service/62197bd433c0179346497d74/fiscalite-foncier-douanes/declaration-de-cessation-de-activite-des-entreprises-au-cf",
+    "category": "fiscalite_foncier_douanes",
     "type": "html",
-    "updated_at": "2026-03-04"
+    "updated_at": "2026-03-05"
   },
   {
-    "id": "tg-dgdn",
-    "title": "Direction Generale de la Documentation Nationale",
-    "url": "https://dgdn.gouv.tg/",
-    "category": "identite",
+    "id": "tg-sp-carte-commercant-etranger",
+    "title": "Service Public - Carte professionnelle des commercants etrangers",
+    "url": "https://service-public.gouv.tg/service/62197bd433c0179346497d65/fiscalite-foncier-douanes/demande-d-attribution-de-la-carte-professionnelle-des-comme",
+    "category": "fiscalite_foncier_douanes",
     "type": "html",
-    "updated_at": "2026-03-04"
+    "updated_at": "2026-03-05"
   }
 ]
