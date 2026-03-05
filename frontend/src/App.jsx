@@ -6,6 +6,7 @@ import EmptyState from "./components/EmptyState";
 import ChecklistPage from "./components/ChecklistPage";
 import AuthPage from "./components/AuthPage";
 import FormPage from "./components/FormPage";
+import AdminPage from "./components/AdminPage";
 
 const API_BASE = "/api";
 const USER_KEY = "ads_user";
@@ -14,6 +15,7 @@ const TOKEN_KEY = "ads_token";
 export default function App() {
   const [activeTab, setActiveTab] = useState("assistant");
   const [user, setUser] = useState(null);
+  const [token, setToken] = useState("");
   const [question, setQuestion] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
@@ -38,6 +40,7 @@ export default function App() {
       if (!res.ok) throw new Error("Session invalide");
       const data = await res.json();
       setUser(data.user);
+      setToken(token);
       localStorage.setItem(USER_KEY, JSON.stringify(data.user));
     } catch {
       localStorage.removeItem(USER_KEY);
@@ -103,11 +106,12 @@ export default function App() {
 
   function onLogin(authPayload) {
     const nextUser = authPayload?.user || null;
-    const token = authPayload?.token || "";
-    if (!nextUser || !token) return;
+    const nextToken = authPayload?.token || "";
+    if (!nextUser || !nextToken) return;
     setUser(nextUser);
+    setToken(nextToken);
     localStorage.setItem(USER_KEY, JSON.stringify(nextUser));
-    localStorage.setItem(TOKEN_KEY, token);
+    localStorage.setItem(TOKEN_KEY, nextToken);
   }
 
   async function logout() {
@@ -123,6 +127,7 @@ export default function App() {
       }
     }
     setUser(null);
+    setToken("");
     localStorage.removeItem(USER_KEY);
     localStorage.removeItem(TOKEN_KEY);
   }
@@ -134,80 +139,78 @@ export default function App() {
   return (
     <main className="page">
       <header className="hero">
-        <h1>Assistant Demarches Simplifiees - Togo</h1>
-        <p>Pose ta question administrative et obtiens un plan d'action clair.</p>
-        <div className="user-row">
-          <span>Connecte: {user.name}</span>
-          <button className="btn-secondary" onClick={logout}>Deconnexion</button>
+        <div className="hero-inner">
+          <div className="hero-copy">
+            <p className="eyebrow">Expert Administrative Assistant</p>
+            <h1>Assistant Demarches Simplifiees</h1>
+            <p className="hero-sub">Orientation rapide pour les procedures administratives au Togo.</p>
+            <div className="user-row">
+              <span>Connecte: {user.name} ({user.role === "admin" ? "Admin" : "Utilisateur"})</span>
+              <button className="btn-secondary" onClick={logout}>Deconnexion</button>
+            </div>
+          </div>
+          <div className="hero-badge">
+            <strong>24/7</strong>
+            <span>Support orientation</span>
+          </div>
         </div>
       </header>
 
       <nav className="tabs">
-        <button
-          className={activeTab === "assistant" ? "tab active" : "tab"}
-          onClick={() => setActiveTab("assistant")}
-        >
-          Assistant
-        </button>
-        <button
-          className={activeTab === "checklist" ? "tab active" : "tab"}
-          onClick={() => setActiveTab("checklist")}
-        >
-          Checklist
-        </button>
-        <button
-          className={activeTab === "form" ? "tab active" : "tab"}
-          onClick={() => setActiveTab("form")}
-        >
-          Formulaire
-        </button>
-        <button
-          className={activeTab === "history" ? "tab active" : "tab"}
-          onClick={() => setActiveTab("history")}
-        >
-          Historique
-        </button>
+        <button className={activeTab === "assistant" ? "tab active" : "tab"} onClick={() => setActiveTab("assistant")}>Assistant</button>
+        <button className={activeTab === "checklist" ? "tab active" : "tab"} onClick={() => setActiveTab("checklist")}>Checklist</button>
+        <button className={activeTab === "form" ? "tab active" : "tab"} onClick={() => setActiveTab("form")}>Formulaire</button>
+        <button className={activeTab === "history" ? "tab active" : "tab"} onClick={() => setActiveTab("history")}>Historique</button>
+        {user.role === "admin" && (
+          <button className={activeTab === "admin" ? "tab active" : "tab"} onClick={() => setActiveTab("admin")}>Admin</button>
+        )}
       </nav>
 
       {error && <p className="error">{error}</p>}
 
-      {activeTab === "assistant" && (
-        <>
-          <AskForm
-            question={question}
-            loading={loading}
-            checklistLoading={checklistLoading}
-            onChangeQuestion={setQuestion}
-            onAsk={ask}
-            onGenerateChecklist={generateChecklist}
-          />
-          {!result && !loading && (
-            <EmptyState
-              title="Commence par une question"
-              description="Exemple: Quels documents pour creer une entreprise au Togo ?"
+      <section className="content-grid">
+        <div>
+          {activeTab === "assistant" && (
+            <>
+              <AskForm
+                question={question}
+                loading={loading}
+                checklistLoading={checklistLoading}
+                onChangeQuestion={setQuestion}
+                onAsk={ask}
+                onGenerateChecklist={generateChecklist}
+              />
+              {!result && !loading && (
+                <EmptyState
+                  title="Commence par une question"
+                  description="Exemple: Quels documents pour creer une entreprise au Togo ?"
+                />
+              )}
+              <AnswerPanel result={result} />
+            </>
+          )}
+
+          {activeTab === "checklist" && (
+            <ChecklistPage
+              question={question}
+              checklistResult={checklistResult}
+              loading={checklistLoading}
+              onGenerate={generateChecklist}
             />
           )}
-          <AnswerPanel result={result} />
-        </>
-      )}
 
-      {activeTab === "checklist" && (
-        <ChecklistPage
-          question={question}
-          checklistResult={checklistResult}
-          loading={checklistLoading}
-          onGenerate={generateChecklist}
-        />
-      )}
+          {activeTab === "form" && <FormPage />}
 
-      {activeTab === "form" && <FormPage />}
+          {activeTab === "history" && (
+            <HistoryPanel history={history} onReuseQuestion={(q) => {
+              setQuestion(q);
+              setActiveTab("assistant");
+            }} />
+          )}
 
-      {activeTab === "history" && (
-        <HistoryPanel history={history} onReuseQuestion={(q) => {
-          setQuestion(q);
-          setActiveTab("assistant");
-        }} />
-      )}
+          {activeTab === "admin" && user.role === "admin" && <AdminPage token={token} />}
+        </div>
+      </section>
     </main>
   );
 }

@@ -99,6 +99,7 @@ class AuthUser(BaseModel):
     id: str
     name: str
     email: str
+    role: str = "user"
 
 
 class AuthResponse(BaseModel):
@@ -112,3 +113,25 @@ class AuthMeResponse(BaseModel):
 
 class AuthLogoutResponse(BaseModel):
     ok: bool
+
+
+class AdminSourceItem(BaseModel):
+    id: str
+    title: str
+    url: str
+    category: str
+    type: str = "html"
+    updated_at: str
+
+
+class AdminSourcesResponse(BaseModel):
+    items: list[AdminSourceItem]
+
+
+class AdminSourcesUpdateRequest(BaseModel):
+    items: list[AdminSourceItem]
+
+
+class AdminActionResponse(BaseModel):
+    ok: bool
+    message: str

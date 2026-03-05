@@ -194,6 +194,7 @@ Configurer au minimum:
 - `DATABASE_URL=<reference railway postgres>`
 - `OPENAI_API_KEY=<ta cle>` (recommande)
 - `OPENAI_MODEL=gpt-4o-mini`
+- `ADMIN_EMAILS=<email_admin_1,email_admin_2>`
 
 Notes:
 - Railway fournit `PORT` automatiquement (ne pas forcer).
