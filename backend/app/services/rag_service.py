@@ -33,10 +33,10 @@ class RagService:
         generated_at = datetime.now(timezone.utc).isoformat()
         if not hits:
             return AskResponse(
-                summary="Base documentaire vide. Lance d'abord l'indexation RAG.",
+                summary="Je n'ai pas encore assez de contenu officiel indexe pour cette question.",
                 steps=[
-                    "Ajouter des sources officielles dans backend/data/raw/sources.jsonl",
-                    "Lancer le script d'indexation",
+                    "Ajouter des sources officielles fiables et recentes",
+                    "Indexer ces sources dans la base RAG",
                     "Reposer la question"
                 ],
                 required_documents=[],

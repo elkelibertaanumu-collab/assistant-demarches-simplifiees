@@ -10,7 +10,7 @@ export default function HistoryPanel({ history, onReuseQuestion }) {
             <button className="history-btn" onClick={() => onReuseQuestion(item.question)}>
               <strong>{item.question}</strong>
               <span className="history-meta">
-                Confiance: {Math.round((item.confidence_score || 0) * 100)}% | {new Date(item.generated_at).toLocaleString()}
+                {new Date(item.generated_at).toLocaleString()}
               </span>
             </button>
           </li>

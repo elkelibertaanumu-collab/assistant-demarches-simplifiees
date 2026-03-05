@@ -12,7 +12,6 @@ export default function AnswerPanel({ result }) {
       </p>
       <h2>Resume</h2>
       <p>{result.summary}</p>
-      <p><strong>Confiance:</strong> {Math.round((result.confidence_score || 0) * 100)}%</p>
       <p><strong>Genere le:</strong> {new Date(result.generated_at).toLocaleString()}</p>
 
       <h3>Etapes</h3>
