@@ -1,8 +1,9 @@
-from datetime import datetime, timezone
+﻿from datetime import datetime, timezone
 import json
 import os
 import re
 from typing import Any
+import unicodedata
 
 import requests
 
@@ -18,9 +19,17 @@ class RagService:
 
     def answer(self, question: str) -> AskResponse:
         detected_category = self._detect_category(question)
+        detected_topic = self._detect_topic(question)
+
         hits = self.store.search(question, top_k=6, category_filter=detected_category)
         if not hits:
             hits = self.store.search(question, top_k=6)
+
+        if detected_topic:
+            filtered_hits = self._filter_hits_for_topic(hits=hits, topic=detected_topic)
+            if filtered_hits:
+                hits = filtered_hits
+
         generated_at = datetime.now(timezone.utc).isoformat()
         if not hits:
             return AskResponse(
@@ -47,7 +56,7 @@ class RagService:
         if isinstance(distance, (int, float)):
             confidence_score = max(0.0, min(1.0, 1.0 / (1.0 + float(distance))))
 
-        passages = [str(item.get("text", "")) for item in hits if item.get("text")]
+        passages = [self._sanitize_passage(str(item.get("text", ""))) for item in hits if item.get("text")]
         sources = self._extract_sources(hits)
 
         llm_output = self._generate_grounded_answer(
@@ -67,6 +76,7 @@ class RagService:
             mistakes = self._extract_mistakes(passages)
             checklist = self._build_checklist(steps, required_docs)
             summary = self._build_summary(question, passages, len(sources))
+
         required_docs = self._normalize_documents(required_docs)
         required_docs = self._apply_question_specific_documents(question, required_docs)
 
@@ -81,9 +91,26 @@ class RagService:
             generated_at=generated_at
         )
 
+    def _normalize_text(self, value: str) -> str:
+        if not value:
+            return ""
+        fixed = str(value)
+        fixed = fixed.replace("identitÃ©", "identite").replace("citoyennetÃ©", "citoyennete")
+        normalized = unicodedata.normalize("NFKD", fixed)
+        ascii_only = normalized.encode("ascii", "ignore").decode("ascii")
+        return re.sub(r"\s+", " ", ascii_only.lower()).strip()
+
+    def _sanitize_passage(self, text: str) -> str:
+        if not text:
+            return ""
+        cleaned = re.sub(r"Retour en haut Navigation.*$", "", text, flags=re.IGNORECASE)
+        cleaned = cleaned.replace("Aller au contenu principal", " ")
+        cleaned = re.sub(r"\s+", " ", cleaned).strip()
+        return cleaned
+
     def _detect_category(self, question: str) -> str | None:
-        q = question.lower()
-        if any(k in q for k in ["carte d'identite", "carte d identite", "passeport", "acte de naissance", "nationalite"]):
+        q = self._normalize_text(question)
+        if ("carte" in q and "identit" in q) or any(k in q for k in ["carte d'identite", "carte d identite", "passeport", "acte de naissance", "nationalite"]):
             return "papiers_citoyennete"
         if any(k in q for k in ["casier", "tribunal", "justice", "plainte", "jugement"]):
             return "justice"
@@ -94,6 +121,56 @@ class RagService:
         if any(k in q for k in ["entreprise", "societe", "immatriculation", "commerce", "micro-entreprise", "micro entreprise"]):
             return "fiscalite_foncier_douanes"
         return None
+
+    def _detect_topic(self, question: str) -> str | None:
+        q = self._normalize_text(question)
+        if ("carte" in q and "identit" in q) or any(k in q for k in ["cni", "carte d identite", "carte nationale d identite", "piece d identite"]):
+            return "cni"
+        if "casier" in q:
+            return "casier"
+        if any(k in q for k in ["entreprise", "micro entreprise", "immatriculation", "societe"]):
+            return "entreprise"
+        return None
+
+    def _filter_hits_for_topic(self, hits: list[dict[str, Any]], topic: str) -> list[dict[str, Any]]:
+        if not hits:
+            return []
+
+        if topic == "cni":
+            allow_tokens = ["identite", "cni", "nationalite", "acte de naissance", "papiers", "citoyennete", "dgdn"]
+            reject_tokens = [
+                "permis de construire",
+                "titre foncier",
+                "attestation fonciere",
+                "certificat administratif",
+                "fosses septiques",
+                "devis descriptif"
+            ]
+        elif topic == "casier":
+            allow_tokens = ["casier", "justice", "tribunal", "condamnation", "non condamnation"]
+            reject_tokens = ["foncier", "permis de construire"]
+        else:
+            allow_tokens = []
+            reject_tokens = []
+
+        out: list[dict[str, Any]] = []
+        for hit in hits:
+            meta = hit.get("metadata", {}) or {}
+            content = " ".join(
+                [
+                    str(hit.get("text", "")),
+                    str(meta.get("title", "")),
+                    str(meta.get("category", "")),
+                    str(meta.get("url", ""))
+                ]
+            )
+            normalized = self._normalize_text(content)
+            if any(token in normalized for token in reject_tokens):
+                continue
+            if allow_tokens and not any(token in normalized for token in allow_tokens):
+                continue
+            out.append(hit)
+        return out
 
     def _generate_grounded_answer(
         self,
@@ -183,7 +260,7 @@ class RagService:
                 s = sentence.strip()
                 if len(s) < 25:
                     continue
-                low = s.lower()
+                low = self._normalize_text(s)
                 if any(v in low for v in verbs):
                     picked.append(s.capitalize())
                 if len(picked) >= 5:
@@ -202,11 +279,22 @@ class RagService:
 
     def _extract_documents(self, passages: list[str]) -> list[str]:
         keys = ["piece", "identite", "justificatif", "certificat", "formulaire", "attestation", "copie"]
+        bad_doc_tokens = [
+            "permis de construire",
+            "titre foncier",
+            "attestation fonciere",
+            "certificat administratif",
+            "fosses septiques",
+            "plan parcellaire",
+            "devis descriptif"
+        ]
         docs: list[str] = []
         for text in passages:
             sentences = re.split(r"[.;:!?]\s+", text)
             for sentence in sentences:
-                low = sentence.lower()
+                low = self._normalize_text(sentence)
+                if any(bad in low for bad in bad_doc_tokens):
+                    continue
                 if any(k in low for k in keys) and len(sentence.strip()) > 10:
                     docs.append(sentence.strip().capitalize())
                 if len(docs) >= 5:
@@ -246,11 +334,11 @@ class RagService:
         out: list[str] = []
         seen: set[str] = set()
         for doc in documents:
-            for part in re.split(r"[,/|•\-]\s*", str(doc)):
+            for part in re.split(r"[,/|â€¢\-]\s*", str(doc)):
                 text = part.strip()
                 if not text:
                     continue
-                low = text.lower()
+                low = self._normalize_text(text)
                 if any(token in low for token in noise_tokens):
                     continue
                 if len(text) > 90:
@@ -276,8 +364,8 @@ class RagService:
         return out[:6]
 
     def _apply_question_specific_documents(self, question: str, docs: list[str]) -> list[str]:
-        q = question.lower()
-        if "carte" in q and ("identite" in q or "identité" in q):
+        q = self._normalize_text(question)
+        if ("carte" in q and "identit" in q) or any(k in q for k in ["carte d identite", "carte nationale d identite", "cni", "piece d identite"]):
             return [
                 "Extrait d'acte de naissance",
                 "Photo d'identite recente",
@@ -307,7 +395,7 @@ class RagService:
             "Informations incoherentes dans le formulaire",
             "Document non lisible ou non valide"
         ]
-        text = " ".join(passages).lower()
+        text = self._normalize_text(" ".join(passages))
         mistakes: list[str] = []
         if "incomplet" in text:
             mistakes.append("Dossier incomplet")
